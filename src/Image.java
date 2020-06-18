@@ -3,37 +3,39 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class File {
+class Image {
 
     private char bufferedFile;
     private int bytesBufferedFile;
     private String filePath;
-    FileInputStream file;
-    PixMap pixMap = new PixMap();
+    private FileOutputStream fileOut;
+    private FileInputStream file;
 
 
-    public int ppmFileLenghtImage;
-    public int ppmFileHeightImage;
-    public String ppmFileTitleImage = "";
-    public int maximumColourScale;
-    public String maximumColourScaleAsString = "";
-    public String pixSeq = "";
+    private PixMap pixMap = new PixMap();
+    private String pixSeq = "";
+
+    private String ppmFileTitleImage = "";
+    private int ppmFileLenghtImage;
+    private int ppmFileHeightImage;
+    String ppmFileLenghtString = "";
+    String ppmFileHeightString = "";
+    private int maximumColourScale;
+    private String maximumColourScaleAsString = "";
+
+
+    String sizeMetadata = "";
+    private String fileData = "P3"+ "\n" + ppmFileTitleImage.trim() + "\n" ;
 
 
 
-    public File(String filePath) {
-
-        String ppmFileLenghtString = "";
-        String ppmFileHeightString = "";
-        String sizeMetadata = "";
-
+    public Image(String filePath) throws IOException {
 
         this.filePath = filePath;
         try {
             this.file = new FileInputStream(this.filePath);
             this.bytesBufferedFile = this.file.read();
             int line = 0;
-
 
             while (bytesBufferedFile != -1) {
                 this.bufferedFile = (char)(this.bytesBufferedFile);
@@ -78,22 +80,8 @@ public class File {
         }
         this.ppmFileHeightImage = Integer.parseInt(ppmFileHeightString);
         this.maximumColourScale = Integer.parseInt(maximumColourScaleAsString);
-    }
 
-
-    public void readBufferedFile() throws IOException {
-        this.bytesBufferedFile = this.file.read();
-        int line = 0;
-
-        while (bytesBufferedFile != -1) {
-            this.bufferedFile = (char)(this.bytesBufferedFile);
-            if(bufferedFile == '\n') line++;
-            if(line >= 4) {
-                System.out.print(bufferedFile);
-            }
-            this.bytesBufferedFile = this.file.read();
-        }
-        //this.file.close();
+        loadBufferedInPixMap();
     }
 
     public void loadBufferedInPixMap() throws IOException {
@@ -158,32 +146,24 @@ public class File {
         }
     }
 
+    public void getImageMetadata() {
 
-}
-
-class EditFile extends File {
-
-
-    FileOutputStream file;
-
-    String fileData = "P3"+ "\n" +  super.ppmFileTitleImage.trim() + "\n" ;
-
-    public EditFile(String filePath) throws IOException {
-        super(filePath);
-        loadBufferedInPixMap();
-
+        System.out.println(" Titre de l'image : " + ppmFileTitleImage);
+        System.out.println(" hauteur de l'image : " + ppmFileHeightString);
+        System.out.println(" Longueur de l'image : " + ppmFileLenghtString);
+        System.out.println("Echel");
     }
 
     public void writeFile(String filePath) {
-        this.fileData = this.fileData + super.ppmFileLenghtImage+ " " + super.ppmFileHeightImage + "\n"  + super.maximumColourScaleAsString + "\n" + super.pixMap.getPixMapAsString(super.ppmFileLenghtImage, super.ppmFileHeightImage);
+        this.fileData = this.fileData + ppmFileLenghtImage+ " " + ppmFileHeightImage + "\n"  + maximumColourScaleAsString + "\n" + pixMap.getPixMapAsString(ppmFileLenghtImage, ppmFileHeightImage);
 
         try {
-            this.file = new FileOutputStream(filePath);
+            this.fileOut = new FileOutputStream(filePath);
             for(int i = 0; i < fileData.length()-1;i++) {
                 System.out.print(fileData.charAt(i));
-                this.file.write(fileData.charAt(i));
+                this.fileOut.write(fileData.charAt(i));
             }
-            this.file.close();
+            this.fileOut.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -191,52 +171,57 @@ class EditFile extends File {
         }
     }
 
-
     public void lightenDarken(int valueToAdd) {
-        super.pixMap.updateDominantColors("red", valueToAdd, super.maximumColourScale);
-        super.pixMap.updateDominantColors("green", valueToAdd, super.maximumColourScale);
-        super.pixMap.updateDominantColors("blue", valueToAdd, super.maximumColourScale);
+
+        pixMap.updateDominantColors("red", valueToAdd, maximumColourScale);
+     pixMap.updateDominantColors("green", valueToAdd, maximumColourScale);
+     pixMap.updateDominantColors("blue", valueToAdd, maximumColourScale);
     }
 
     public void lightenDarken(String colorName, int valueToAdd) {
-        super.pixMap.updateDominantColors(colorName, valueToAdd, super.maximumColourScale);
+        pixMap.updateDominantColors(colorName, valueToAdd, maximumColourScale);
     }
 
-
     public void greyScale() {
-        super.pixMap.updateColorsWithAvg();
+        pixMap.updateColorsWithAvg();
     }
 
     public void cutOffImg(int fromPixLine, int toPixLine) {
-        super.pixMap = super.pixMap.cutOffPixMap(new PixMap(),fromPixLine, toPixLine, super.ppmFileLenghtImage);
-        super.ppmFileHeightImage = toPixLine - fromPixLine +1;
+
+        pixMap = pixMap.cutOffPixMap(new PixMap(),fromPixLine, toPixLine, ppmFileLenghtImage);
+     ppmFileHeightImage = toPixLine - fromPixLine +1;
     }
+
     public void cutOffImg(int fromPixLine, int fromColumn, int toPixLine, int toColumn) {
-        super.pixMap = super.pixMap.cutOffPixMap(new PixMap(),fromPixLine, fromColumn, toPixLine, toColumn,  super.ppmFileLenghtImage);
-        super.ppmFileHeightImage = toPixLine - fromPixLine +1;
-        super.ppmFileLenghtImage = toColumn - fromColumn +1;
+
+        pixMap = pixMap.cutOffPixMap(new PixMap(),fromPixLine, fromColumn, toPixLine, toColumn,  ppmFileLenghtImage);
+     ppmFileHeightImage = toPixLine - fromPixLine +1;
+     ppmFileLenghtImage = toColumn - fromColumn +1;
     }
 
     public void getNegative() {
-        super.pixMap.getNegative(super.maximumColourScale);
+        pixMap.getNegative(maximumColourScale);
     }
 
     public void enlargeFile(int xN) {
-        for(int i = 0; i <= xN-1; i++) {
-            super.pixMap.enlargePixMap();
-            super.ppmFileLenghtImage = super.ppmFileLenghtImage*2;
+        for(int i = 0; i <= xN-1; i++) { pixMap.enlargePixMap(); ppmFileLenghtImage = ppmFileLenghtImage*2;
         }
     }
 
     public void fileEnlargement(int xN) {
         for(int i = 0; i <= xN-1; i++) {
-            super.pixMap = super.pixMap.pixMapEnlargement(new PixMap(), super.ppmFileLenghtImage, super.ppmFileHeightImage,  super.ppmFileHeightImage*2);
-            super.ppmFileLenghtImage = super.ppmFileLenghtImage*2;
-            super.ppmFileHeightImage = super.ppmFileHeightImage*2;
+
+            pixMap = pixMap.pixMapEnlargement(new PixMap(), ppmFileLenghtImage, ppmFileHeightImage,  ppmFileHeightImage*2); ppmFileLenghtImage = ppmFileLenghtImage*2; ppmFileHeightImage = ppmFileHeightImage*2;
         }
 
     }
-    
+
+}
+
+
+
+
+
 
 }
 
