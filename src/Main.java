@@ -11,7 +11,7 @@ public class Main {
 
         //File ppmImg = new File(filePath);
 
-        EditFile ppmImg = new EditFile(filePath);
+        Image ppmImg = new Image(filePath);
 
         //ppmImg.lightenDarken(100);
         //ppmImg.greyScale();

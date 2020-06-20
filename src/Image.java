@@ -10,21 +10,16 @@ class Image {
     private String filePath;
     private FileOutputStream fileOut;
     private FileInputStream file;
-
-
     private PixMap pixMap = new PixMap();
     private String pixSeq = "";
-
     private String ppmFileTitleImage = "";
     private int ppmFileLenghtImage;
     private int ppmFileHeightImage;
-    String ppmFileLenghtString = "";
-    String ppmFileHeightString = "";
+    private String ppmFileLenghtString = "";
+    private String ppmFileHeightString = "";
     private int maximumColourScale;
     private String maximumColourScaleAsString = "";
-
-
-    String sizeMetadata = "";
+    private String sizeMetadata = "";
     private String fileData = "P3"+ "\n" + ppmFileTitleImage.trim() + "\n" ;
 
 
@@ -146,12 +141,27 @@ class Image {
         }
     }
 
-    public void getImageMetadata() {
-
+    public void displayImageMetadata() {
         System.out.println(" Titre de l'image : " + ppmFileTitleImage);
         System.out.println(" hauteur de l'image : " + ppmFileHeightString);
         System.out.println(" Longueur de l'image : " + ppmFileLenghtString);
-        System.out.println("Echel");
+        System.out.println("Echelle de couleur maximal : " + maximumColourScaleAsString);
+    }
+
+    public int getPpmFileLenghtImage() {
+        return ppmFileLenghtImage;
+    }
+
+    public int getPpmFileHeightImage() {
+        return ppmFileHeightImage;
+    }
+
+    public int getMaximumColourScale() {
+        return maximumColourScale;
+    }
+
+    public String getPpmFileTitleImage() {
+        return ppmFileTitleImage;
     }
 
     public void writeFile(String filePath) {
@@ -172,31 +182,35 @@ class Image {
     }
 
     public void lightenDarken(int valueToAdd) {
-
         pixMap.updateDominantColors("red", valueToAdd, maximumColourScale);
-     pixMap.updateDominantColors("green", valueToAdd, maximumColourScale);
-     pixMap.updateDominantColors("blue", valueToAdd, maximumColourScale);
+        pixMap.updateDominantColors("green", valueToAdd, maximumColourScale);
+        pixMap.updateDominantColors("blue", valueToAdd, maximumColourScale);
     }
 
     public void lightenDarken(String colorName, int valueToAdd) {
         pixMap.updateDominantColors(colorName, valueToAdd, maximumColourScale);
     }
 
-    public void greyScale() {
+    public void getBlackAndWhite() {
         pixMap.updateColorsWithAvg();
     }
 
     public void cutOffImg(int fromPixLine, int toPixLine) {
 
-        pixMap = pixMap.cutOffPixMap(new PixMap(),fromPixLine, toPixLine, ppmFileLenghtImage);
-     ppmFileHeightImage = toPixLine - fromPixLine +1;
+        if(fromPixLine > ppmFileHeightImage || toPixLine > ppmFileHeightImage || fromPixLine < toPixLine) {
+            throw new incorrectLineOrColumnError();
+        }
+        this.pixMap = pixMap.cutOffPixMap(new PixMap(),fromPixLine, toPixLine, ppmFileLenghtImage);
+        this.ppmFileHeightImage = toPixLine - fromPixLine +1;
     }
 
     public void cutOffImg(int fromPixLine, int fromColumn, int toPixLine, int toColumn) {
-
-        pixMap = pixMap.cutOffPixMap(new PixMap(),fromPixLine, fromColumn, toPixLine, toColumn,  ppmFileLenghtImage);
-     ppmFileHeightImage = toPixLine - fromPixLine +1;
-     ppmFileLenghtImage = toColumn - fromColumn +1;
+        if(fromPixLine > ppmFileHeightImage || toPixLine > ppmFileHeightImage || fromPixLine > toPixLine || fromColumn > ppmFileLenghtImage || toColumn > ppmFileLenghtImage || fromColumn > toColumn ) {
+            throw new incorrectLineOrColumnError();
+        }
+        this.pixMap = pixMap.cutOffPixMap(new PixMap(),fromPixLine, fromColumn, toPixLine, toColumn,  ppmFileLenghtImage);
+        this.ppmFileHeightImage = toPixLine - fromPixLine +1;
+        this.ppmFileLenghtImage = toColumn - fromColumn +1;
     }
 
     public void getNegative() {
@@ -204,24 +218,26 @@ class Image {
     }
 
     public void enlargeFile(int xN) {
-        for(int i = 0; i <= xN-1; i++) { pixMap.enlargePixMap(); ppmFileLenghtImage = ppmFileLenghtImage*2;
+        for(int i = 0; i <= xN-1; i++) {
+            this.pixMap.enlargePixMap();
+            this.ppmFileLenghtImage = ppmFileLenghtImage*2;
         }
     }
 
     public void fileEnlargement(int xN) {
         for(int i = 0; i <= xN-1; i++) {
-
-            pixMap = pixMap.pixMapEnlargement(new PixMap(), ppmFileLenghtImage, ppmFileHeightImage,  ppmFileHeightImage*2); ppmFileLenghtImage = ppmFileLenghtImage*2; ppmFileHeightImage = ppmFileHeightImage*2;
+            this.pixMap = pixMap.pixMapEnlargement(new PixMap(), ppmFileLenghtImage, ppmFileHeightImage,  ppmFileHeightImage*2);
+            this.ppmFileLenghtImage = ppmFileLenghtImage*2;
+            this.ppmFileHeightImage = ppmFileHeightImage*2;
         }
-
     }
 
 }
 
-
-
-
-
-
+class incorrectLineOrColumnError extends Error {
+    incorrectLineOrColumnError() {
+        System.out.print("Incorrect line");
+    }
 }
+
 
