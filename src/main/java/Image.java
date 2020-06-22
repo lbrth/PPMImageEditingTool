@@ -1,13 +1,17 @@
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+
 
 class Image {
 
     private char bufferedFile;
     private int bytesBufferedFile;
     private String filePath;
+    private String filePathOut = "";
     private FileOutputStream fileOut;
     private FileInputStream file;
     private PixMap pixMap = new PixMap();
@@ -21,6 +25,7 @@ class Image {
     private String maximumColourScaleAsString = "";
     private String sizeMetadata = "";
     private String fileData = "P3"+ "\n" + ppmFileTitleImage.trim() + "\n" ;
+
 
 
 
@@ -164,11 +169,21 @@ class Image {
         return ppmFileTitleImage;
     }
 
-    public void writeFile(String filePath) {
+    public String getFilePath() {
+        return this.filePath;
+    }
+
+    public String getFilePathOut() {
+        return this.filePathOut;
+    }
+
+    public void writeFile(String filePathOut) {
         this.fileData = this.fileData + ppmFileLenghtImage+ " " + ppmFileHeightImage + "\n"  + maximumColourScaleAsString + "\n" + pixMap.getPixMapAsString(ppmFileLenghtImage, ppmFileHeightImage);
+        //check PPM Extension
+
 
         try {
-            this.fileOut = new FileOutputStream(filePath);
+            this.fileOut = new FileOutputStream(filePathOut);
             for(int i = 0; i < fileData.length()-1;i++) {
                 System.out.print(fileData.charAt(i));
                 this.fileOut.write(fileData.charAt(i));

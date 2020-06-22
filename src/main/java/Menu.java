@@ -1,5 +1,8 @@
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
+
 
 public class Menu {
 
@@ -11,6 +14,7 @@ public class Menu {
         for(int i = 0; i <= images.length-1;i++) {
             if(this.images[i] == null) {
                 this.images[i] = new Image(path);
+                break;
             }
         }
 
@@ -49,7 +53,7 @@ public class Menu {
         System.out.println(" 8 - Get the negative of the image");
         System.out.println(" 9 - Enlarge the Image");
         System.out.println(" 10 - Image enlargement");
-        System.out.println("q - to quit the editing features menu ");
+        System.out.println(" b - Back to Main Menu ");
     }
 
     public void editImage(int imageIndex, int editingOption) {
@@ -103,7 +107,7 @@ public class Menu {
             System.out.println("To Column : ");
             int toColumn = sc.nextInt();
             System.out.println("Let's go. It may take a while");
-            images[imageIndex].cutOffImg(fromLine, toLine, fromColumn, toColumn);
+            images[imageIndex].cutOffImg(fromLine, fromColumn,toLine , toColumn);
             System.out.println("It's done, please save it to check the result.");
         } else if(editingOption == 8) {
             System.out.println("Let's go. It may take a while");
@@ -122,7 +126,137 @@ public class Menu {
             images[imageIndex].fileEnlargement(enlargeXZoom);
             System.out.println("It's done, please save it to check the result.");
         } else {
-            throw new wrongEditingOption();
+            throw new wrongEditingOption(editingOption);
+        }
+    }
+
+    public void displayMainMenu() throws IOException {
+        System.out.println("Main Menu : ");
+        System.out.println(" 1 - Load Image");
+        System.out.println(" 2 - Edit Image");
+        System.out.println(" 3 - Save Image");
+        System.out.println(" 4 - Display Images Info");
+        System.out.println(" q - Quit ");
+
+
+        int userSelection = 0;
+        boolean retry;
+        char userChoiceToSaveImage = 'y';
+
+        do {
+            try {
+                System.out.println("Please select one of the options : ");
+                userSelection = sc.nextInt();
+                retry = false;
+
+            } catch (InputMismatchException e) {
+                System.out.println("ERROR : Incorrect input. An integer is wainting here.");
+                retry = true;
+                sc.nextLine();
+            }
+        } while (retry);
+
+
+        if(userSelection == 1) {
+
+            sc.nextLine();
+            char userChoiceToLoadNewImage = ' ';
+            do {
+            System.out.println("Please set the image path system : ");
+
+                do {
+                    try {
+                        String imagePath = sc.nextLine();
+                        loadImage(imagePath);
+                        retry = false;
+                    } catch (NumberFormatException e) {
+                        System.out.println("Please retry. Set the image path system : ");
+                        retry = true;
+                    } catch (InputMismatchException e) {
+                        System.out.println("ERROR : Incorrect input. An integer is wainting here.");
+                        retry = true;
+                        sc.nextLine();
+                    }
+                } while (retry);
+                userChoiceToLoadNewImage = ' ';
+                while (userChoiceToLoadNewImage != 'y' && userChoiceToLoadNewImage != 'n' ) {
+                    System.out.println("Do you want to load an other image ? y/n : ");
+                    userChoiceToLoadNewImage = sc.nextLine().charAt(0);
+                }
+            } while (userChoiceToLoadNewImage != 'n');
+            displayMainMenu();
+
+        } else if (userSelection == 2) {
+            displayMenuOptions();
+
+            int indexImage = 0;
+            int featureSelected = 0;
+            do {
+                try {
+                    System.out.println("Please select the image index that you want to edit : ");
+                    indexImage = sc.nextInt();
+                    System.out.println("Please select editing feature to your image :  ");
+                    featureSelected = sc.nextInt();
+                    editImage(indexImage, featureSelected);
+                    retry = false;
+                } catch (wrongImageIndex e) {
+                    retry = true;
+                } catch (wrongEditingOption e) {
+                    retry = true;
+                } catch (InputMismatchException e) {
+                    System.out.println("ERROR : Incorrect input. An integer is wainting here.");
+                    retry = true;
+                    sc.nextLine();
+                }
+
+            } while (retry);
+            
+            displayMainMenu();
+        } else if (userSelection == 3) {
+
+            do {
+                try {
+                    System.out.println("Please select the image you want to save : ");
+                    displayImagesLoaded();
+                    do {
+                        System.out.println("Select the index image : ");
+                        int indexImageToSave = sc.nextInt();
+                        sc.nextLine();
+                        System.out.println("Set the path to save : ");
+                        String filePathOut = sc.nextLine();
+                        saveImage(indexImageToSave, filePathOut);
+                        System.out.println("Do you want to save an other image ? y/n : ");
+                        userChoiceToSaveImage = sc.nextLine().charAt(0);
+                    } while (userChoiceToSaveImage != 'n');
+                } catch (wrongImageIndex e ) {
+                    retry = true;
+                } catch (InputMismatchException e) {
+                    System.out.println("ERROR : Incorrect input. An integer is wainting here.");
+                    retry = true;
+                    sc.nextLine();
+                }
+            } while (retry);
+
+
+
+
+            displayMainMenu();
+
+
+        } else if (userSelection == 4) {
+            displayImagesLoaded();
+            displayMainMenu();
+        } else {
+            throw new wrongMainMenuSelected();
+        }
+    }
+
+    public void saveImage(int imageIndex, String filePathOut) {
+        if(imageIndex > images.length || images[imageIndex] == null) {
+            throw new wrongImageIndex(imageIndex);
+        } else {
+            images[imageIndex].writeFile(filePathOut);
+            System.out.println("Your image is correctly save at " + images[imageIndex].getFilePathOut());
         }
     }
 
@@ -132,12 +266,18 @@ public class Menu {
 
 class wrongImageIndex extends Error {
     wrongImageIndex(int i) {
-        System.out.print(i + ", doesn't match any images");
+        System.out.println("ERROR : " + i + ", doesn't match any images");
     }
 }
 
 class wrongEditingOption extends Error {
-    wrongEditingOption() {
+    wrongEditingOption(int i ) {
+        System.out.println("ERROR : " + i + ", doesn't match any editing feature");
+    }
+}
+
+class wrongMainMenuSelected extends Error {
+    wrongMainMenuSelected() {
         System.out.println("Not an option");
     }
 }
