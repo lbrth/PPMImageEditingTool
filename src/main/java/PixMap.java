@@ -74,7 +74,7 @@ public class PixMap {
         Pix pix = getFirstPix();
         while (pix != null) {
             String maxColor = pix.getMaxColor();
-                if( maxColor == dominantColor) {
+                if( maxColor.equals(dominantColor)) {
                     int red = pix.getRed() + valueToAdd;
                     int green = pix.getGreen() + valueToAdd;
                     int blue = pix.getBlue() + valueToAdd;

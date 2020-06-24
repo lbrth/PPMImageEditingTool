@@ -1,7 +1,9 @@
-import java.io.FileNotFoundException;
+import java.awt.*;
 import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+
+
 
 
 public class Menu {
@@ -9,8 +11,8 @@ public class Menu {
     private Image [] images = new Image[10];
     private int nbrImages = 0;
 
-
     public void loadImage(String path) throws IOException {
+        nbrImages = 0;
         for(int i = 0; i <= images.length-1;i++) {
             if(this.images[i] == null) {
                 this.images[i] = new Image(path);
@@ -26,11 +28,13 @@ public class Menu {
     }
 
     public void displayImagesLoaded() {
+        if(nbrImages == 0) {
+            throw new NoImageLoaded();
+        }
         for(int i = 0; i <= images.length-1;i++) {
             if(this.images[i] == null) {
                 continue;
             } else {
-                System.out.println("Image " + i + " : " + images[i].getPpmFileTitleImage());
                 System.out.println("Metadata Image " + i + " : ");
                 images[i].displayImageMetadata();
             }
@@ -56,199 +60,248 @@ public class Menu {
         System.out.println(" b - Back to Main Menu ");
     }
 
-    public void editImage(int imageIndex, int editingOption) {
+    public void editImage(int imageIndex, String editingOption) throws IOException {
 
-        if(imageIndex > images.length || images[imageIndex] == null) {
-            throw new wrongImageIndex(imageIndex);
-        } else if(editingOption == 1) {
-            System.out.println("Length : " + images[imageIndex].getPpmFileLenghtImage());
-            System.out.println("Heigh : " + images[imageIndex].getPpmFileHeightImage());
-        } else if(editingOption == 2) {
-            System.out.println("Maximum color scale : " + images[imageIndex].getMaximumColourScale());
-        } else if(editingOption == 3) {
-            System.out.println("Please set a value to lighten or darken all the image colors");
-            int value = sc.nextInt();
-            System.out.println("Let's go. It may take a while");
-            images[imageIndex].lightenDarken(value);
-            System.out.println("It's done, please save it to check the result.");
-        } else if(editingOption == 4) {
-            System.out.println("Please set a value and the color, to lighten or darken it ");
-            System.out.println("Colors choice : Red, Green, Blue : ");
-            String selectedColor = sc.nextLine();
-            System.out.println("Set a value : ");
-            int value = sc.nextInt();
-            System.out.println("Let's go. It may take a while");
-            images[imageIndex].lightenDarken(selectedColor, value);
-            System.out.println("It's done, please save it to check the result.");
-        } else if(editingOption == 5) {
-            System.out.println("Let's go. It may take a while");
-            images[imageIndex].getBlackAndWhite();
-            System.out.println("It's done, please save it to check the result.");
-        } else if(editingOption == 6) {
-            System.out.println("Please set from what line you want to cut and to what line ");
-            System.out.println("Maximum number of lines accepted  " + images[imageIndex].getPpmFileHeightImage());
-            System.out.println("From Line : ");
-            int fromLine = sc.nextInt();
-            System.out.println("To Line : ");
-            int toLine = sc.nextInt();
-            System.out.println("Let's go. It may take a while");
-            images[imageIndex].cutOffImg(fromLine, toLine);
-            System.out.println("It's done, please save it to check the result.");
-        } else if(editingOption == 7) {
-            System.out.println("Please set from what line you want to cut and to what line, same for column ");
-            System.out.println("Maximum number of lines accepted  : " + images[imageIndex].getPpmFileHeightImage());
-            System.out.println("Maximum number of columns accepted  : " + images[imageIndex].getPpmFileLenghtImage());
-            System.out.println("From Line : ");
-            int fromLine = sc.nextInt();
-            System.out.println("To Line : ");
-            int toLine = sc.nextInt();
-            System.out.println("From Column : ");
-            int fromColumn = sc.nextInt();
-            System.out.println("To Column : ");
-            int toColumn = sc.nextInt();
-            System.out.println("Let's go. It may take a while");
-            images[imageIndex].cutOffImg(fromLine, fromColumn,toLine , toColumn);
-            System.out.println("It's done, please save it to check the result.");
-        } else if(editingOption == 8) {
-            System.out.println("Let's go. It may take a while");
-            images[imageIndex].getNegative();
-            System.out.println("It's done, please save it to check the result.");
-        } else if(editingOption == 9) {
-            System.out.println("Please set a value of how many time you want to enlarge the image, horizontally.");
-            int enlargeHorizontallyXZoom = sc.nextInt();
-            System.out.println("Let's go. It may take a while");
-            images[imageIndex].enlargeFile(enlargeHorizontallyXZoom);
-            System.out.println("It's done, please save it to check the result.");
-        } else if (editingOption == 10) {
-            System.out.println("Please set a value of how many time you want to enlarge the entire image.");
-            int enlargeXZoom = sc.nextInt();
-            System.out.println("Let's go. It may take a while");
-            images[imageIndex].fileEnlargement(enlargeXZoom);
-            System.out.println("It's done, please save it to check the result.");
-        } else {
-            throw new wrongEditingOption(editingOption);
+        boolean backToMainMenu = false;
+
+        while (!backToMainMenu) {
+            boolean retry = false;
+
+            if(imageIndex > images.length || images[imageIndex] == null) {
+                throw new wrongImageIndex(imageIndex);
+            } else if(editingOption.equalsIgnoreCase("1")) {
+                System.out.println("Length : " + images[imageIndex].getPpmFileLenghtImage());
+                System.out.println("Heigh : " + images[imageIndex].getPpmFileHeightImage());
+                backToMainMenu = true;
+            } else if(editingOption.equalsIgnoreCase("2")) {
+                System.out.println("Maximum color scale : " + images[imageIndex].getMaximumColourScale());
+                backToMainMenu = true;
+            } else if(editingOption.equalsIgnoreCase("3")) {
+                System.out.println("Please set a value to lighten or darken all the image colors");
+                int value = sc.nextInt();
+                System.out.println("Loading ...");
+                images[imageIndex].lightenDarken(value);
+                System.out.println("It's done, please save it to check the result.");
+                backToMainMenu = true;
+            } else if(editingOption.equalsIgnoreCase("4")) {
+                String selectedColor = "";
+                System.out.println("Please set a value and the color, to lighten or darken it ");
+                do {
+                    try {
+                        System.out.println("Colors choice : Red, Green or Blue : ");
+                        selectedColor = sc.nextLine();
+                        System.out.println("Set a value : ");
+                        int value = sc.nextInt();
+                        System.out.println("Loading ...");
+                        images[imageIndex].lightenDarken(selectedColor, value);
+                        retry = false;
+                    } catch (wrongColorName e) {
+                        retry = true;
+                    }
+                } while (retry);
+                System.out.println("It's done, please save it to check the result.");
+                backToMainMenu = true;
+            } else if(editingOption.equalsIgnoreCase("5")) {
+                System.out.println("Loading ...");
+                images[imageIndex].getBlackAndWhite();
+                System.out.println("It's done, please save it to check the result.");
+                backToMainMenu = true;
+            } else if(editingOption.equalsIgnoreCase("6")) {
+                System.out.println("Please set from what line you want to cut and to what line ");
+                System.out.println("Maximum number of lines accepted  " + images[imageIndex].getPpmFileHeightImage());
+                System.out.println("From Line : ");
+                int fromLine = sc.nextInt();
+                System.out.println("To Line : ");
+                int toLine = sc.nextInt();
+                System.out.println("Loading ...");
+                images[imageIndex].cutOffImg(fromLine, toLine);
+                System.out.println("It's done, please save it to check the result.");
+                backToMainMenu = true;
+            } else if(editingOption.equalsIgnoreCase("7")) {
+                System.out.println("Please set from what line you want to cut and to what line, same for column ");
+                System.out.println("Maximum number of lines accepted  : " + images[imageIndex].getPpmFileHeightImage());
+                System.out.println("Maximum number of columns accepted  : " + images[imageIndex].getPpmFileLenghtImage());
+                System.out.println("From Line : ");
+                int fromLine = sc.nextInt();
+                System.out.println("To Line : ");
+                int toLine = sc.nextInt();
+                System.out.println("From Column : ");
+                int fromColumn = sc.nextInt();
+                System.out.println("To Column : ");
+                int toColumn = sc.nextInt();
+                System.out.println("Loading ...");
+                images[imageIndex].cutOffImg(fromLine, fromColumn,toLine , toColumn);
+                System.out.println("It's done, please save it to check the result.");
+                backToMainMenu = true;
+            } else if(editingOption.equalsIgnoreCase("8")) {
+                System.out.println("Loading ...");
+                images[imageIndex].getNegative();
+                System.out.println("It's done, please save it to check the result.");
+                backToMainMenu = true;
+            } else if(editingOption.equalsIgnoreCase("9")) {
+                System.out.println("Please set a value of how many time you want to enlarge the image, horizontally.");
+                int enlargeHorizontallyXZoom = sc.nextInt();
+                System.out.println("Loading ...");
+                images[imageIndex].enlargeFile(enlargeHorizontallyXZoom);
+                System.out.println("It's done, please save it to check the result.");
+                backToMainMenu = true;
+            } else if (editingOption.equalsIgnoreCase("10")) {
+                System.out.println("Please set a value of how many time you want to enlarge the entire image.");
+                int enlargeXZoom = sc.nextInt();
+                System.out.println("Loading ...");
+                images[imageIndex].fileEnlargement(enlargeXZoom);
+                System.out.println("It's done, please save it to check the result.");
+                backToMainMenu = true;
+            } else if (editingOption.equalsIgnoreCase("b")) {
+                backToMainMenu = true;
+            } else {
+                throw new wrongEditingOption(editingOption);
+            }
         }
     }
 
-    public void displayMainMenu() throws IOException {
+    public void displayMainMenu() {
         System.out.println("Main Menu : ");
         System.out.println(" 1 - Load Image");
         System.out.println(" 2 - Edit Image");
         System.out.println(" 3 - Save Image");
         System.out.println(" 4 - Display Images Info");
         System.out.println(" q - Quit ");
+        System.out.println();
+        System.out.println(this.nbrImages + " image loaded");
+        System.out.println();
+    }
 
+    public void Menu() throws IOException {
 
-        int userSelection = 0;
+        displayMainMenu();
+
+        String userSelection = " ";
         boolean retry;
-        char userChoiceToSaveImage = 'y';
+        String userChoiceToSaveImage = " ";
+        boolean quit = false;
 
-        do {
+
+        while (!quit) {
             try {
-                System.out.println("Please select one of the options : ");
-                userSelection = sc.nextInt();
-                retry = false;
-
-            } catch (InputMismatchException e) {
-                System.out.println("ERROR : Incorrect input. An integer is wainting here.");
-                retry = true;
-                sc.nextLine();
-            }
-        } while (retry);
-
-
-        if(userSelection == 1) {
-
-            sc.nextLine();
-            char userChoiceToLoadNewImage = ' ';
-            do {
-            System.out.println("Please set the image path system : ");
-
                 do {
                     try {
-                        String imagePath = sc.nextLine();
-                        loadImage(imagePath);
+                        userSelection = " ";
+                        System.out.println("Please select one of the options : ");
+                        userSelection = sc.nextLine();
                         retry = false;
-                    } catch (NumberFormatException e) {
-                        System.out.println("Please retry. Set the image path system : ");
-                        retry = true;
                     } catch (InputMismatchException e) {
-                        System.out.println("ERROR : Incorrect input. An integer is wainting here.");
+                        System.out.println("ERROR : Incorrect input. An integer is waiting here.");
                         retry = true;
-                        sc.nextLine();
+                    } catch (StringIndexOutOfBoundsException e) {
+                        retry = true;
                     }
                 } while (retry);
-                userChoiceToLoadNewImage = ' ';
-                while (userChoiceToLoadNewImage != 'y' && userChoiceToLoadNewImage != 'n' ) {
-                    System.out.println("Do you want to load an other image ? y/n : ");
-                    userChoiceToLoadNewImage = sc.nextLine().charAt(0);
-                }
-            } while (userChoiceToLoadNewImage != 'n');
-            displayMainMenu();
 
-        } else if (userSelection == 2) {
-            displayMenuOptions();
+                if(userSelection.equalsIgnoreCase("1")) {
 
-            int indexImage = 0;
-            int featureSelected = 0;
-            do {
-                try {
-                    System.out.println("Please select the image index that you want to edit : ");
-                    indexImage = sc.nextInt();
-                    System.out.println("Please select editing feature to your image :  ");
-                    featureSelected = sc.nextInt();
-                    editImage(indexImage, featureSelected);
-                    retry = false;
-                } catch (wrongImageIndex e) {
-                    retry = true;
-                } catch (wrongEditingOption e) {
-                    retry = true;
-                } catch (InputMismatchException e) {
-                    System.out.println("ERROR : Incorrect input. An integer is wainting here.");
-                    retry = true;
-                    sc.nextLine();
-                }
-
-            } while (retry);
-            
-            displayMainMenu();
-        } else if (userSelection == 3) {
-
-            do {
-                try {
-                    System.out.println("Please select the image you want to save : ");
-                    displayImagesLoaded();
+                    String userChoiceToLoadNewImage = "y";
                     do {
-                        System.out.println("Select the index image : ");
-                        int indexImageToSave = sc.nextInt();
+                        System.out.println("Please set the image path system : ");
+                        do {
+                            try {
+                                String imagePath = sc.nextLine();
+                                System.out.println("Loading ...");
+                                loadImage(imagePath);
+                                retry = false;
+                            } catch (NumberFormatException e) {
+                                System.out.println("Please retry. Set the image path system : ");
+                                retry = true;
+                            } catch (InputMismatchException e) {
+                                System.out.println("ERROR : Incorrect input. An integer is waiting here.");
+                                retry = true;
+                            }
+                        } while (retry);
+                        userChoiceToLoadNewImage = " ";
+                        while (!userChoiceToLoadNewImage.equals("y") && !userChoiceToLoadNewImage.equals("n") ) {
+                            System.out.println("Do you want to load an other image ? y/n : ");
+                            userChoiceToLoadNewImage = sc.nextLine();
+                        }
+                    } while (userChoiceToLoadNewImage.equalsIgnoreCase("y"));
+                    displayMainMenu();
+
+
+                } else if (userSelection.equalsIgnoreCase("2")) {
+                    if(nbrImages == 0) {
+                        throw new NoImageLoaded();
+                    } else {
+                        displayMenuOptions();
+                        int indexImage = 0;
+                        String featureSelected;
+                        do {
+                            try {
+                                System.out.println("Please select editing feature to your image :  ");
+                                featureSelected = sc.nextLine();
+                                System.out.println("Please select the image index that you want to edit : ");
+                                indexImage = sc.nextInt();
+                                editImage(indexImage, featureSelected);
+                                retry = false;
+                            } catch (wrongImageIndex e) {
+                                retry = true;
+                            } catch (wrongEditingOption e) {
+                                retry = true;
+                            } catch (InputMismatchException e) {
+                                System.out.println("ERROR : Incorrect input. An integer is waiting here.");
+                                retry = true;
+                            }
+                        } while (retry);
                         sc.nextLine();
-                        System.out.println("Set the path to save : ");
-                        String filePathOut = sc.nextLine();
-                        saveImage(indexImageToSave, filePathOut);
-                        System.out.println("Do you want to save an other image ? y/n : ");
-                        userChoiceToSaveImage = sc.nextLine().charAt(0);
-                    } while (userChoiceToSaveImage != 'n');
-                } catch (wrongImageIndex e ) {
-                    retry = true;
-                } catch (InputMismatchException e) {
-                    System.out.println("ERROR : Incorrect input. An integer is wainting here.");
-                    retry = true;
+                        displayMainMenu();
+                    }
+
+                } else if (userSelection.equalsIgnoreCase("3")) {
+                    String imageTitle = " ";
+                    if(nbrImages == 0) {
+                        throw new NoImageLoaded();
+                    }
+                    do {
+                        try {
+                            System.out.println("Please select the image you want to save : ");
+                            displayImagesLoaded();
+                            do {
+                                System.out.println("Select the index image : ");
+                                int indexImageToSave = sc.nextInt();
+                                sc.nextLine();
+                                System.out.println("Set a title for the image : ");
+                                imageTitle = sc.nextLine();
+                                System.out.println("Loading ...");
+                                saveImage(indexImageToSave, imageTitle);
+                                System.out.println("Do you want to save an other image ? y/n : ");
+                                userChoiceToSaveImage = sc.nextLine();
+                            } while (!userChoiceToSaveImage.equalsIgnoreCase("n"));
+                        } catch (wrongImageIndex e ) {
+                            retry = true;
+                        } catch (InputMismatchException e) {
+                            System.out.println("ERROR : Incorrect input. An integer is wainting here.");
+                            retry = true;
+                        }
+                    } while (retry);
                     sc.nextLine();
+                    displayMainMenu();
+                } else if (userSelection.equalsIgnoreCase("4")) {
+                    if(nbrImages == 0) {
+                        throw new NoImageLoaded();
+                    }
+                    displayImagesLoaded();
+                    displayMainMenu();
+                } else if (userSelection.equalsIgnoreCase("q")) {
+                    quit = true;
+
+                } else {
+                    throw new wrongMainMenuSelected();
                 }
-            } while (retry);
-
-
-
-
-            displayMainMenu();
-
-
-        } else if (userSelection == 4) {
-            displayImagesLoaded();
-            displayMainMenu();
-        } else {
-            throw new wrongMainMenuSelected();
+            } catch (NoImageLoaded e) {
+                displayMainMenu();
+            } catch (wrongMainMenuSelected e) {
+                displayMainMenu();
+            }
         }
+
     }
 
     public void saveImage(int imageIndex, String filePathOut) {
@@ -271,7 +324,7 @@ class wrongImageIndex extends Error {
 }
 
 class wrongEditingOption extends Error {
-    wrongEditingOption(int i ) {
+    wrongEditingOption(String i ) {
         System.out.println("ERROR : " + i + ", doesn't match any editing feature");
     }
 }
@@ -279,6 +332,11 @@ class wrongEditingOption extends Error {
 class wrongMainMenuSelected extends Error {
     wrongMainMenuSelected() {
         System.out.println("Not an option");
+    }
+}
+class NoImageLoaded extends Error {
+    NoImageLoaded() {
+        System.out.println("No image loaded, please load an image before using the feature.");
     }
 }
 

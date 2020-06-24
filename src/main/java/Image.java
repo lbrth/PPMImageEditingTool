@@ -3,6 +3,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.File;
 
 
 
@@ -39,7 +40,7 @@ class Image {
 
             while (bytesBufferedFile != -1) {
                 this.bufferedFile = (char)(this.bytesBufferedFile);
-                System.out.print(bufferedFile);
+                //System.out.print(bufferedFile);
 
                 if(bufferedFile == '\n') line++;
                 if(line == 1) {
@@ -147,10 +148,10 @@ class Image {
     }
 
     public void displayImageMetadata() {
-        System.out.println(" Titre de l'image : " + ppmFileTitleImage);
-        System.out.println(" hauteur de l'image : " + ppmFileHeightString);
-        System.out.println(" Longueur de l'image : " + ppmFileLenghtString);
-        System.out.println("Echelle de couleur maximal : " + maximumColourScaleAsString);
+        System.out.println(" - Image Title : " + ppmFileTitleImage);
+        System.out.println(" - Height : " + ppmFileHeightString);
+        System.out.println(" - Length : " + ppmFileLenghtString);
+        System.out.println(" - Maximum Color Scale  : " + maximumColourScaleAsString);
     }
 
     public int getPpmFileLenghtImage() {
@@ -177,15 +178,14 @@ class Image {
         return this.filePathOut;
     }
 
-    public void writeFile(String filePathOut) {
+    public void writeFile(String imageTitle) {
         this.fileData = this.fileData + ppmFileLenghtImage+ " " + ppmFileHeightImage + "\n"  + maximumColourScaleAsString + "\n" + pixMap.getPixMapAsString(ppmFileLenghtImage, ppmFileHeightImage);
-        //check PPM Extension
-
+        this.filePathOut = "ppm_files_out/" + imageTitle + ".ppm";
 
         try {
             this.fileOut = new FileOutputStream(filePathOut);
             for(int i = 0; i < fileData.length()-1;i++) {
-                System.out.print(fileData.charAt(i));
+                //System.out.print(fileData.charAt(i));
                 this.fileOut.write(fileData.charAt(i));
             }
             this.fileOut.close();
@@ -203,7 +203,11 @@ class Image {
     }
 
     public void lightenDarken(String colorName, int valueToAdd) {
-        pixMap.updateDominantColors(colorName, valueToAdd, maximumColourScale);
+        if(colorName.equalsIgnoreCase("green") || colorName.equalsIgnoreCase("red")|| colorName.equalsIgnoreCase("blue")) {
+            pixMap.updateDominantColors(colorName, valueToAdd, maximumColourScale);
+        } else {
+            throw new wrongColorName(colorName);
+        }
     }
 
     public void getBlackAndWhite() {
@@ -254,5 +258,7 @@ class incorrectLineOrColumnError extends Error {
         System.out.print("Incorrect line");
     }
 }
+
+
 
 
