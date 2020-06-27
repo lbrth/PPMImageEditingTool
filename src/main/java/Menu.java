@@ -1,5 +1,7 @@
+import javax.swing.text.DateFormatter;
 import java.awt.*;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -10,6 +12,8 @@ public class Menu {
 
     private Image [] images = new Image[10];
     private int nbrImages = 0;
+
+
 
     public void loadImage(String path) throws IOException {
         nbrImages = 0;
@@ -57,6 +61,7 @@ public class Menu {
         System.out.println(" 8 - Get the negative of the image");
         System.out.println(" 9 - Enlarge the Image");
         System.out.println(" 10 - Image enlargement");
+        System.out.println(" 11 - Reduce the Image ");
         System.out.println(" b - Back to Main Menu ");
     }
 
@@ -80,7 +85,9 @@ public class Menu {
                 System.out.println("Please set a value to lighten or darken all the image colors");
                 int value = sc.nextInt();
                 System.out.println("Loading ...");
+                long start = System.currentTimeMillis();
                 images[imageIndex].lightenDarken(value);
+                System.out.println("Task Duration : " + taskDuration(start));
                 System.out.println("It's done, please save it to check the result.");
                 backToMainMenu = true;
             } else if(editingOption.equalsIgnoreCase("4")) {
@@ -93,7 +100,9 @@ public class Menu {
                         System.out.println("Set a value : ");
                         int value = sc.nextInt();
                         System.out.println("Loading ...");
+                        long start = System.currentTimeMillis();
                         images[imageIndex].lightenDarken(selectedColor, value);
+                        System.out.println("Task Duration : " + taskDuration(start));
                         retry = false;
                     } catch (wrongColorName e) {
                         retry = true;
@@ -102,8 +111,15 @@ public class Menu {
                 System.out.println("It's done, please save it to check the result.");
                 backToMainMenu = true;
             } else if(editingOption.equalsIgnoreCase("5")) {
+                String rec = " ";
+                System.out.println("Do you want run to run the feature recursively ? y/n ");
+                do {
+                   rec  = sc.nextLine();
+                } while (!rec.equalsIgnoreCase("y") && !rec.equalsIgnoreCase("n"));
                 System.out.println("Loading ...");
-                images[imageIndex].getBlackAndWhite();
+                long start = System.currentTimeMillis();
+                images[imageIndex].getBlackAndWhite(rec);
+                System.out.println("Task Duration : " + taskDuration(start));
                 System.out.println("It's done, please save it to check the result.");
                 backToMainMenu = true;
             } else if(editingOption.equalsIgnoreCase("6")) {
@@ -114,7 +130,9 @@ public class Menu {
                 System.out.println("To Line : ");
                 int toLine = sc.nextInt();
                 System.out.println("Loading ...");
+                long start = System.currentTimeMillis();
                 images[imageIndex].cutOffImg(fromLine, toLine);
+                System.out.println("Task Duration : " + taskDuration(start));
                 System.out.println("It's done, please save it to check the result.");
                 backToMainMenu = true;
             } else if(editingOption.equalsIgnoreCase("7")) {
@@ -130,26 +148,61 @@ public class Menu {
                 System.out.println("To Column : ");
                 int toColumn = sc.nextInt();
                 System.out.println("Loading ...");
+                long start = System.currentTimeMillis();
                 images[imageIndex].cutOffImg(fromLine, fromColumn,toLine , toColumn);
+                System.out.println("Task Duration : " + taskDuration(start));
                 System.out.println("It's done, please save it to check the result.");
                 backToMainMenu = true;
             } else if(editingOption.equalsIgnoreCase("8")) {
+                String rec = " ";
+                System.out.println("Do you want run to run the feature recursively ? y/n ");
+                do {
+                    rec  = sc.nextLine();
+                } while (!rec.equalsIgnoreCase("y") && !rec.equalsIgnoreCase("n"));
                 System.out.println("Loading ...");
-                images[imageIndex].getNegative();
+                long start = System.currentTimeMillis();
+                images[imageIndex].getNegative(rec);
+                System.out.println("Task Duration : " + taskDuration(start));
                 System.out.println("It's done, please save it to check the result.");
                 backToMainMenu = true;
             } else if(editingOption.equalsIgnoreCase("9")) {
                 System.out.println("Please set a value of how many time you want to enlarge the image, horizontally.");
                 int enlargeHorizontallyXZoom = sc.nextInt();
+                String rec = " ";
+                System.out.println("Do you want run to run the feature recursively ? y/n ");
+                do {
+                    rec  = sc.nextLine();
+                } while (!rec.equalsIgnoreCase("y") && !rec.equalsIgnoreCase("n"));
                 System.out.println("Loading ...");
-                images[imageIndex].enlargeFile(enlargeHorizontallyXZoom);
+                long start = System.currentTimeMillis();
+                images[imageIndex].enlargeFile(enlargeHorizontallyXZoom,rec);
+                System.out.println("Task Duration : " + taskDuration(start));
                 System.out.println("It's done, please save it to check the result.");
                 backToMainMenu = true;
             } else if (editingOption.equalsIgnoreCase("10")) {
                 System.out.println("Please set a value of how many time you want to enlarge the entire image.");
                 int enlargeXZoom = sc.nextInt();
                 System.out.println("Loading ...");
+                long start = System.currentTimeMillis();
                 images[imageIndex].fileEnlargement(enlargeXZoom);
+                System.out.println("Task Duration : " + taskDuration(start));
+                System.out.println("It's done, please save it to check the result.");
+                backToMainMenu = true;
+            } else if (editingOption.equalsIgnoreCase("11")) {
+                System.out.println("Please set a value of how many time you want to reduce the image, horizontally.");
+                int enlargeHorizontallyXZoom = sc.nextInt();
+                /*
+                String rec = " ";
+                System.out.println("Do you want run to run the feature recursively ? y/n ");
+                do {
+                    rec  = sc.nextLine();
+                } while (!rec.equalsIgnoreCase("y") && !rec.equalsIgnoreCase("n"));
+
+                 */
+                System.out.println("Loading ...");
+                long start = System.currentTimeMillis();
+                images[imageIndex].reduceImage(enlargeHorizontallyXZoom);
+                System.out.println("Task Duration : " + taskDuration(start));
                 System.out.println("It's done, please save it to check the result.");
                 backToMainMenu = true;
             } else if (editingOption.equalsIgnoreCase("b")) {
@@ -206,8 +259,10 @@ public class Menu {
                         do {
                             try {
                                 String imagePath = sc.nextLine();
+                                long start = System.currentTimeMillis();
                                 System.out.println("Loading ...");
                                 loadImage(imagePath);
+                                System.out.println("Task Duration : " + taskDuration(start));
                                 retry = false;
                             } catch (NumberFormatException e) {
                                 System.out.println("Please retry. Set the image path system : ");
@@ -270,7 +325,9 @@ public class Menu {
                                 System.out.println("Set a title for the image : ");
                                 imageTitle = sc.nextLine();
                                 System.out.println("Loading ...");
+                                long start = System.currentTimeMillis();
                                 saveImage(indexImageToSave, imageTitle);
+                                System.out.println("Task Duration : " + taskDuration(start));
                                 System.out.println("Do you want to save an other image ? y/n : ");
                                 userChoiceToSaveImage = sc.nextLine();
                             } while (!userChoiceToSaveImage.equalsIgnoreCase("n"));
@@ -311,6 +368,16 @@ public class Menu {
             images[imageIndex].writeFile(filePathOut);
             System.out.println("Your image is correctly save at " + images[imageIndex].getFilePathOut());
         }
+    }
+
+    public String taskDuration(long start) {
+        long duration = (System.currentTimeMillis() - start);
+        long millis = duration % 1000;
+        long second = (duration / 1000) % 60;
+        long minute = (duration / (1000 * 60)) % 60;
+        long hour = (duration/ (1000 * 60 * 60)) % 24;
+        String time = String.format("%02d:%02d:%02d.%d", hour, minute, second, millis);
+        return time;
     }
 
     static Scanner sc = new Scanner(System.in);

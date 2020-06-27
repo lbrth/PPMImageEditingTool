@@ -142,7 +142,18 @@ public class PixMap {
         }
     }
 
-    public PixMap cutOffPixMap(PixMap newPixMap, int fromLine, int toLine, int maxLengt) {
+    public void updateColorsWithAvgRecursively(Pix pix) {
+        if(pix != null) {
+            int avg = pix.getAverage();
+            pix.setRed(avg);
+            pix.setGreen(avg);
+            pix.setBlue(avg);
+            updateColorsWithAvgRecursively(pix.getNext());
+
+        }
+    }
+
+    public PixMap cutOffPixMap(PixMap newPixMap, int fromLine, int toLine, int maxLength) {
 
         Pix pix = getFirstPix();
 
@@ -153,14 +164,14 @@ public class PixMap {
             if(countLine >= fromLine) {
                 newPixMap.addPixAtLast(pix.getRed(), pix.getGreen(), pix.getBlue());
                 if(toLine == countLine) {
-                    if(countColumn == maxLengt) {
+                    if(countColumn == maxLength) {
                         break;
                     }
                 }
             }
 
             pix = pix.getNext();
-            if(countColumn == maxLengt) {
+            if(countColumn == maxLength) {
                 countColumn = 0;
                 countLine++;
             }
@@ -171,7 +182,7 @@ public class PixMap {
         return newPixMap;
     }
 
-    public PixMap cutOffPixMap(PixMap newPixMap, int fromLine, int fromColumn, int toLine, int toColumn, int maxLengt) {
+    public PixMap cutOffPixMap(PixMap newPixMap, int fromLine, int fromColumn, int toLine, int toColumn, int maxLength) {
 
         Pix pix = getFirstPix();
 
@@ -187,7 +198,7 @@ public class PixMap {
                             pix = pix.getNext();
                             countColumn++;
                         }
-                    } else if(countColumn > maxLengt) {
+                    } else if(countColumn > maxLength) {
                         countLine++;
                         fromLine++;
                         countColumn = 1;
@@ -196,7 +207,7 @@ public class PixMap {
                         pix = pix.getNext();
                     }
                 }
-            } else if(countColumn > maxLengt) {
+            } else if(countColumn > maxLength) {
                 countLine++;
                 countColumn = 1;
 
@@ -221,12 +232,43 @@ public class PixMap {
         }
     }
 
+    public void getNegativeRecursively( Pix pix, int maxColorScale) {
+        if(pix != null) {
+            pix.setRed(maxColorScale-pix.getRed());
+            pix.setGreen(maxColorScale-pix.getGreen());
+            pix.setBlue(maxColorScale-pix.getBlue());
+            getNegativeRecursively(pix.getNext(), maxColorScale);
+        }
+
+    }
+
     public void enlargePixMap() {
         Pix pix = getFirstPix();
         while (pix != null) {
             pix.setNext(new Pix(pix.getRed(), pix.getGreen(), pix.getBlue(), pix.getNext()));
             pix = (pix.getNext()).getNext();
         }
+    }
+
+    public void enlargePixMapRecursively(Pix pix) {
+        if(pix != null) {
+            pix.setNext(new Pix(pix.getRed(), pix.getGreen(), pix.getBlue(), pix.getNext()));
+            enlargePixMapRecursively((pix.getNext()).getNext());
+        }
+    }
+
+    public void reducePixMap() {
+        Pix pix = getFirstPix();
+        Pix nextPix = pix.getNext();
+        while (nextPix != null) {
+            pix.setNext(nextPix.getNext());
+            if(pix.getNext() == null) {
+                break;
+            }
+            pix = nextPix.getNext();
+            nextPix = pix.getNext();
+        }
+
     }
 
     public PixMap pixMapEnlargement(PixMap newPixMap, int maxLenght, int maxheight, int newMaxheight) {

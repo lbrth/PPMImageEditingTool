@@ -149,8 +149,8 @@ class Image {
 
     public void displayImageMetadata() {
         System.out.println(" - Image Title : " + ppmFileTitleImage);
-        System.out.println(" - Height : " + ppmFileHeightString);
-        System.out.println(" - Length : " + ppmFileLenghtString);
+        System.out.println(" - Height : " + ppmFileHeightImage);
+        System.out.println(" - Length : " + ppmFileLenghtImage);
         System.out.println(" - Maximum Color Scale  : " + maximumColourScaleAsString);
     }
 
@@ -210,8 +210,12 @@ class Image {
         }
     }
 
-    public void getBlackAndWhite() {
-        pixMap.updateColorsWithAvg();
+    public void getBlackAndWhite(String rec) {
+        if(rec == "y") {
+            pixMap.updateColorsWithAvgRecursively(pixMap.getFirstPix());
+        } else  {
+            pixMap.updateColorsWithAvg();
+        }
     }
 
     public void cutOffImg(int fromPixLine, int toPixLine) {
@@ -232,15 +236,36 @@ class Image {
         this.ppmFileLenghtImage = toColumn - fromColumn +1;
     }
 
-    public void getNegative() {
-        pixMap.getNegative(maximumColourScale);
+    public void getNegative(String rec) {
+        if(rec == "y") {
+            pixMap.getNegativeRecursively(pixMap.getFirstPix(), maximumColourScale);
+        } else {
+            pixMap.getNegative(maximumColourScale);
+        }
     }
 
-    public void enlargeFile(int xN) {
-        for(int i = 0; i <= xN-1; i++) {
-            this.pixMap.enlargePixMap();
-            this.ppmFileLenghtImage = ppmFileLenghtImage*2;
+    public void enlargeFile(int xN, String rec) {
+        if(rec == "y") {
+            for(int i = 0; i <= xN-1; i++) {
+                this.pixMap.enlargePixMapRecursively(pixMap.getFirstPix());
+                this.ppmFileLenghtImage = ppmFileLenghtImage*2;
+            }
+        } else  {
+            for(int i = 0; i <= xN-1; i++) {
+                this.pixMap.enlargePixMap();
+                this.ppmFileLenghtImage = ppmFileLenghtImage*2;
+            }
         }
+
+    }
+
+    public void reduceImage(int xN) {
+        for(int i = 0; i <= xN-1; i++) {
+            this.pixMap.reducePixMap();
+            this.ppmFileLenghtImage = ppmFileLenghtImage/2;
+            this.ppmFileHeightImage = ppmFileHeightImage/2;
+        }
+
     }
 
     public void fileEnlargement(int xN) {
