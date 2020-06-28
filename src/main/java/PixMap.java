@@ -260,7 +260,7 @@ public class PixMap {
     public void reducePixMap() {
         Pix pix = getFirstPix();
         Pix nextPix = pix.getNext();
-        while (nextPix != null) {
+        while (pix.getNext() != null) {
             pix.setNext(nextPix.getNext());
             if(pix.getNext() == null) {
                 break;
@@ -268,8 +268,8 @@ public class PixMap {
             pix = nextPix.getNext();
             nextPix = pix.getNext();
         }
-
     }
+
 
     public PixMap pixMapEnlargement(PixMap newPixMap, int maxLenght, int maxheight, int newMaxheight) {
 

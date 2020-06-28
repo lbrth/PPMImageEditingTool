@@ -220,7 +220,7 @@ class Image {
 
     public void cutOffImg(int fromPixLine, int toPixLine) {
 
-        if(fromPixLine > ppmFileHeightImage || toPixLine > ppmFileHeightImage || fromPixLine < toPixLine) {
+        if(fromPixLine > ppmFileHeightImage || toPixLine > ppmFileHeightImage || fromPixLine > toPixLine) {
             throw new incorrectLineOrColumnError();
         }
         this.pixMap = pixMap.cutOffPixMap(new PixMap(),fromPixLine, toPixLine, ppmFileLenghtImage);

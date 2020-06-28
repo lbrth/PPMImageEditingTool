@@ -1,7 +1,4 @@
-import javax.swing.text.DateFormatter;
-import java.awt.*;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -70,146 +67,145 @@ public class Menu {
         boolean backToMainMenu = false;
 
         while (!backToMainMenu) {
-            boolean retry = false;
+            boolean retry;
 
-            if(imageIndex > images.length || images[imageIndex] == null) {
-                throw new wrongImageIndex(imageIndex);
-            } else if(editingOption.equalsIgnoreCase("1")) {
-                System.out.println("Length : " + images[imageIndex].getPpmFileLenghtImage());
-                System.out.println("Heigh : " + images[imageIndex].getPpmFileHeightImage());
-                backToMainMenu = true;
-            } else if(editingOption.equalsIgnoreCase("2")) {
-                System.out.println("Maximum color scale : " + images[imageIndex].getMaximumColourScale());
-                backToMainMenu = true;
-            } else if(editingOption.equalsIgnoreCase("3")) {
-                System.out.println("Please set a value to lighten or darken all the image colors");
-                int value = sc.nextInt();
-                System.out.println("Loading ...");
-                long start = System.currentTimeMillis();
-                images[imageIndex].lightenDarken(value);
-                System.out.println("Task Duration : " + taskDuration(start));
-                System.out.println("It's done, please save it to check the result.");
-                backToMainMenu = true;
-            } else if(editingOption.equalsIgnoreCase("4")) {
-                String selectedColor = "";
-                System.out.println("Please set a value and the color, to lighten or darken it ");
-                do {
-                    try {
-                        System.out.println("Colors choice : Red, Green or Blue : ");
-                        selectedColor = sc.nextLine();
-                        System.out.println("Set a value : ");
-                        int value = sc.nextInt();
-                        System.out.println("Loading ...");
-                        long start = System.currentTimeMillis();
-                        images[imageIndex].lightenDarken(selectedColor, value);
-                        System.out.println("Task Duration : " + taskDuration(start));
-                        retry = false;
-                    } catch (wrongColorName e) {
-                        retry = true;
-                    }
-                } while (retry);
-                System.out.println("It's done, please save it to check the result.");
-                backToMainMenu = true;
-            } else if(editingOption.equalsIgnoreCase("5")) {
-                String rec = " ";
-                System.out.println("Do you want run to run the feature recursively ? y/n ");
-                do {
-                   rec  = sc.nextLine();
-                } while (!rec.equalsIgnoreCase("y") && !rec.equalsIgnoreCase("n"));
-                System.out.println("Loading ...");
-                long start = System.currentTimeMillis();
-                images[imageIndex].getBlackAndWhite(rec);
-                System.out.println("Task Duration : " + taskDuration(start));
-                System.out.println("It's done, please save it to check the result.");
-                backToMainMenu = true;
-            } else if(editingOption.equalsIgnoreCase("6")) {
-                System.out.println("Please set from what line you want to cut and to what line ");
-                System.out.println("Maximum number of lines accepted  " + images[imageIndex].getPpmFileHeightImage());
-                System.out.println("From Line : ");
-                int fromLine = sc.nextInt();
-                System.out.println("To Line : ");
-                int toLine = sc.nextInt();
-                System.out.println("Loading ...");
-                long start = System.currentTimeMillis();
-                images[imageIndex].cutOffImg(fromLine, toLine);
-                System.out.println("Task Duration : " + taskDuration(start));
-                System.out.println("It's done, please save it to check the result.");
-                backToMainMenu = true;
-            } else if(editingOption.equalsIgnoreCase("7")) {
-                System.out.println("Please set from what line you want to cut and to what line, same for column ");
-                System.out.println("Maximum number of lines accepted  : " + images[imageIndex].getPpmFileHeightImage());
-                System.out.println("Maximum number of columns accepted  : " + images[imageIndex].getPpmFileLenghtImage());
-                System.out.println("From Line : ");
-                int fromLine = sc.nextInt();
-                System.out.println("To Line : ");
-                int toLine = sc.nextInt();
-                System.out.println("From Column : ");
-                int fromColumn = sc.nextInt();
-                System.out.println("To Column : ");
-                int toColumn = sc.nextInt();
-                System.out.println("Loading ...");
-                long start = System.currentTimeMillis();
-                images[imageIndex].cutOffImg(fromLine, fromColumn,toLine , toColumn);
-                System.out.println("Task Duration : " + taskDuration(start));
-                System.out.println("It's done, please save it to check the result.");
-                backToMainMenu = true;
-            } else if(editingOption.equalsIgnoreCase("8")) {
-                String rec = " ";
-                System.out.println("Do you want run to run the feature recursively ? y/n ");
-                do {
-                    rec  = sc.nextLine();
-                } while (!rec.equalsIgnoreCase("y") && !rec.equalsIgnoreCase("n"));
-                System.out.println("Loading ...");
-                long start = System.currentTimeMillis();
-                images[imageIndex].getNegative(rec);
-                System.out.println("Task Duration : " + taskDuration(start));
-                System.out.println("It's done, please save it to check the result.");
-                backToMainMenu = true;
-            } else if(editingOption.equalsIgnoreCase("9")) {
-                System.out.println("Please set a value of how many time you want to enlarge the image, horizontally.");
-                int enlargeHorizontallyXZoom = sc.nextInt();
-                String rec = " ";
-                System.out.println("Do you want run to run the feature recursively ? y/n ");
-                do {
-                    rec  = sc.nextLine();
-                } while (!rec.equalsIgnoreCase("y") && !rec.equalsIgnoreCase("n"));
-                System.out.println("Loading ...");
-                long start = System.currentTimeMillis();
-                images[imageIndex].enlargeFile(enlargeHorizontallyXZoom,rec);
-                System.out.println("Task Duration : " + taskDuration(start));
-                System.out.println("It's done, please save it to check the result.");
-                backToMainMenu = true;
-            } else if (editingOption.equalsIgnoreCase("10")) {
-                System.out.println("Please set a value of how many time you want to enlarge the entire image.");
-                int enlargeXZoom = sc.nextInt();
-                System.out.println("Loading ...");
-                long start = System.currentTimeMillis();
-                images[imageIndex].fileEnlargement(enlargeXZoom);
-                System.out.println("Task Duration : " + taskDuration(start));
-                System.out.println("It's done, please save it to check the result.");
-                backToMainMenu = true;
-            } else if (editingOption.equalsIgnoreCase("11")) {
-                System.out.println("Please set a value of how many time you want to reduce the image, horizontally.");
-                int enlargeHorizontallyXZoom = sc.nextInt();
-                /*
-                String rec = " ";
-                System.out.println("Do you want run to run the feature recursively ? y/n ");
-                do {
-                    rec  = sc.nextLine();
-                } while (!rec.equalsIgnoreCase("y") && !rec.equalsIgnoreCase("n"));
+            try {
+                if(imageIndex > images.length || images[imageIndex] == null) {
+                    throw new wrongImageIndex(imageIndex);
+                } else if(editingOption.equalsIgnoreCase("1")) {
+                    System.out.println("Length : " + images[imageIndex].getPpmFileLenghtImage());
+                    System.out.println("Heigh : " + images[imageIndex].getPpmFileHeightImage());
+                    backToMainMenu = true;
+                } else if(editingOption.equalsIgnoreCase("2")) {
+                    System.out.println("Maximum color scale : " + images[imageIndex].getMaximumColourScale());
+                    backToMainMenu = true;
+                } else if(editingOption.equalsIgnoreCase("3")) {
+                    System.out.println("Please set a value to lighten or darken all the image colors");
+                    int value = sc.nextInt();
+                    System.out.println("Loading ...");
+                    long start = System.currentTimeMillis();
+                    images[imageIndex].lightenDarken(value);
+                    System.out.println("Task Duration : " + taskDuration(start));
+                    System.out.println("It's done, please save it to check the result.");
+                    backToMainMenu = true;
+                } else if(editingOption.equalsIgnoreCase("4")) {
+                    String selectedColor = "";
+                    System.out.println("Please set a value and the color, to lighten or darken it ");
+                    do {
+                        try {
+                            System.out.println("Colors choice : Red, Green or Blue : ");
+                            selectedColor = sc.nextLine();
+                            System.out.println("Set a value : ");
+                            int value = sc.nextInt();
+                            System.out.println("Loading ...");
+                            long start = System.currentTimeMillis();
+                            images[imageIndex].lightenDarken(selectedColor, value);
+                            System.out.println("Task Duration : " + taskDuration(start));
+                            retry = false;
+                        } catch (wrongColorName e) {
+                            retry = true;
+                        }
+                    } while (retry);
+                    System.out.println("It's done, please save it to check the result.");
+                    backToMainMenu = true;
+                } else if(editingOption.equalsIgnoreCase("5")) {
+                    String rec = " ";
+                    System.out.println("Do you want run to run the feature recursively ? y/n ");
+                    do {
+                        rec  = sc.nextLine();
+                    } while (!rec.equalsIgnoreCase("y") && !rec.equalsIgnoreCase("n"));
+                    System.out.println("Loading ...");
+                    long start = System.currentTimeMillis();
+                    images[imageIndex].getBlackAndWhite(rec);
+                    System.out.println("Task Duration : " + taskDuration(start));
+                    System.out.println("It's done, please save it to check the result.");
+                    backToMainMenu = true;
+                } else if(editingOption.equalsIgnoreCase("6")) {
+                    System.out.println("Please set from what line you want to cut and to what line ");
+                    System.out.println("Maximum number of lines accepted  " + images[imageIndex].getPpmFileHeightImage());
+                    System.out.println("From Line : ");
+                    int fromLine = sc.nextInt();
+                    System.out.println("To Line : ");
+                    int toLine = sc.nextInt();
+                    System.out.println("Loading ...");
+                    long start = System.currentTimeMillis();
+                    images[imageIndex].cutOffImg(fromLine, toLine);
+                    System.out.println("Task Duration : " + taskDuration(start));
+                    System.out.println("It's done, please save it to check the result.");
+                    backToMainMenu = true;
+                } else if(editingOption.equalsIgnoreCase("7")) {
+                    System.out.println("Please set from what line you want to cut and to what line, same for column ");
+                    System.out.println("Maximum number of lines accepted  : " + images[imageIndex].getPpmFileHeightImage());
+                    System.out.println("Maximum number of columns accepted  : " + images[imageIndex].getPpmFileLenghtImage());
+                    System.out.println("From Line : ");
+                    int fromLine = sc.nextInt();
+                    System.out.println("To Line : ");
+                    int toLine = sc.nextInt();
+                    System.out.println("From Column : ");
+                    int fromColumn = sc.nextInt();
+                    System.out.println("To Column : ");
+                    int toColumn = sc.nextInt();
+                    System.out.println("Loading ...");
+                    long start = System.currentTimeMillis();
+                    images[imageIndex].cutOffImg(fromLine, fromColumn,toLine , toColumn);
+                    System.out.println("Task Duration : " + taskDuration(start));
+                    System.out.println("It's done, please save it to check the result.");
+                    backToMainMenu = true;
+                } else if(editingOption.equalsIgnoreCase("8")) {
+                    String rec = " ";
+                    System.out.println("Do you want run to run the feature recursively ? y/n ");
+                    do {
+                        rec  = sc.nextLine();
+                    } while (!rec.equalsIgnoreCase("y") && !rec.equalsIgnoreCase("n"));
+                    System.out.println("Loading ...");
+                    long start = System.currentTimeMillis();
+                    images[imageIndex].getNegative(rec);
+                    System.out.println("Task Duration : " + taskDuration(start));
+                    System.out.println("It's done, please save it to check the result.");
+                    backToMainMenu = true;
+                } else if(editingOption.equalsIgnoreCase("9")) {
+                    System.out.println("Please set a value of how many time you want to enlarge the image, horizontally.");
+                    int enlargeHorizontallyXZoom = sc.nextInt();
+                    String rec = " ";
+                    System.out.println("Do you want run to run the feature recursively ? y/n ");
+                    do {
+                        rec  = sc.nextLine();
+                    } while (!rec.equalsIgnoreCase("y") && !rec.equalsIgnoreCase("n"));
+                    System.out.println("Loading ...");
+                    long start = System.currentTimeMillis();
+                    images[imageIndex].enlargeFile(enlargeHorizontallyXZoom,rec);
+                    System.out.println("Task Duration : " + taskDuration(start));
+                    System.out.println("It's done, please save it to check the result.");
+                    backToMainMenu = true;
+                } else if (editingOption.equalsIgnoreCase("10")) {
+                    System.out.println("Please set a value of how many time you want to enlarge the entire image.");
+                    int enlargeXZoom = sc.nextInt();
+                    System.out.println("Loading ...");
+                    long start = System.currentTimeMillis();
+                    images[imageIndex].fileEnlargement(enlargeXZoom);
+                    System.out.println("Task Duration : " + taskDuration(start));
+                    System.out.println("It's done, please save it to check the result.");
+                    backToMainMenu = true;
+                } else if (editingOption.equalsIgnoreCase("11")) {
+                    System.out.println("Please set a value of how many time you want to reduce the image, horizontally.");
+                    int reduceHorizontallyXZoom = sc.nextInt();
+                    System.out.println("Loading ...");
+                    long start = System.currentTimeMillis();
+                    images[imageIndex].reduceImage(reduceHorizontallyXZoom);
+                    System.out.println("Task Duration : " + taskDuration(start));
+                    System.out.println("It's done, please save it to check the result.");
+                    backToMainMenu = true;
+                } else if (editingOption.equalsIgnoreCase("b")) {
+                    backToMainMenu = true;
+                } else {
+                    throw new wrongEditingOption(editingOption);
+                }
 
-                 */
-                System.out.println("Loading ...");
-                long start = System.currentTimeMillis();
-                images[imageIndex].reduceImage(enlargeHorizontallyXZoom);
-                System.out.println("Task Duration : " + taskDuration(start));
-                System.out.println("It's done, please save it to check the result.");
-                backToMainMenu = true;
-            } else if (editingOption.equalsIgnoreCase("b")) {
-                backToMainMenu = true;
-            } else {
-                throw new wrongEditingOption(editingOption);
+            } catch (ArrayIndexOutOfBoundsException e ) {
+                retry = true;
             }
+
+
         }
     }
 
@@ -245,6 +241,7 @@ public class Menu {
                         retry = false;
                     } catch (InputMismatchException e) {
                         System.out.println("ERROR : Incorrect input. An integer is waiting here.");
+                        sc.nextLine();
                         retry = true;
                     } catch (StringIndexOutOfBoundsException e) {
                         retry = true;
@@ -294,6 +291,7 @@ public class Menu {
                                 featureSelected = sc.nextLine();
                                 System.out.println("Please select the image index that you want to edit : ");
                                 indexImage = sc.nextInt();
+                                sc.nextLine();
                                 editImage(indexImage, featureSelected);
                                 retry = false;
                             } catch (wrongImageIndex e) {
@@ -302,6 +300,7 @@ public class Menu {
                                 retry = true;
                             } catch (InputMismatchException e) {
                                 System.out.println("ERROR : Incorrect input. An integer is waiting here.");
+                                sc.nextLine();
                                 retry = true;
                             }
                         } while (retry);
